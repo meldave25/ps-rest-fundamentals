@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const idNumberRequestSchema = z.object({
-  params: z.object({ id: z.coerce.number() }),
+  params: z.object({ id: z.coerce.number().int().positive() }),
 });
 
 export const idUUIDRequestSchema = z.object({
@@ -9,7 +9,10 @@ export const idUUIDRequestSchema = z.object({
 });
 
 export const pagingRequestSchema = z.object({
-  query: z.object({ take: z.coerce.number(), skip: z.coerce.number() }),
+  query: z.object({
+    take: z.coerce.number().int().positive(),
+    skip: z.coerce.number().int().nonnegative(),
+  }),
 });
 
 export type Item = {
@@ -23,7 +26,7 @@ export type ItemDetail = Item & {
 };
 
 export const itemDTO = z.object({
-  id: z.optional(z.coerce.number()),
+  id: z.optional(z.coerce.number().int().positive()),
   name: z.string(),
   description: z.nullable(z.string()),
 });
@@ -77,8 +80,8 @@ export type OrderItem = {
 };
 
 export const orderItemDTO = z.object({
-  itemId: z.number(),
-  quantity: z.number(),
+  itemId: z.number().int().positive(),
+  quantity: z.number().int().positive(),
 });
 
 export const orderDTO = z.object({
@@ -101,5 +104,8 @@ export type OrderDTO = z.infer<typeof orderDTO>;
 export type orderItemDTO = z.infer<typeof orderItemDTO>;
 
 export const idItemIdUUIDRequestSchema = z.object({
-  params: z.object({ id: z.string().uuid(), itemId: z.coerce.number() }),
+  params: z.object({
+    id: z.string().uuid(),
+    itemId: z.coerce.number().int().positive(),
+  }),
 });
