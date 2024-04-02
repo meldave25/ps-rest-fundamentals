@@ -20,7 +20,7 @@ export const ordersRouter = express.Router();
 
 ordersRouter.get("/", validate(pagingRequestSchema), async (req, res) => {
   const data = pagingRequestSchema.parse(req);
-  const orders = await getOrders(data.query.start, data.query.size);
+  const orders = await getOrders(data.query.skip, data.query.take);
 
   res.json(orders);
 });

@@ -8,6 +8,10 @@ export const idUUIDRequestSchema = z.object({
   params: z.object({ id: z.string().uuid() }),
 });
 
+export const pagingRequestSchema = z.object({
+  query: z.object({ take: z.coerce.number(), skip: z.coerce.number() }),
+});
+
 export type Item = {
   id: number;
   name: string;
@@ -81,10 +85,6 @@ export const orderDTO = z.object({
   id: z.optional(z.string().uuid()),
   customerId: z.string().uuid(),
   status: z.optional(z.string()),
-});
-
-export const pagingRequestSchema = z.object({
-  query: z.object({ start: z.coerce.number(), size: z.coerce.number() }),
 });
 
 export const orderDTORequestSchema = z.object({
