@@ -5,7 +5,7 @@ import {
   getOrderDetail,
   getOrders,
   deleteOrderItem,
-  addOrderItem,
+  addOrderItems,
 } from "./orders.service";
 import {
   idItemIdUUIDRequestSchema,
@@ -84,12 +84,7 @@ ordersRouter.post(
   validate(orderItemsDTORequestSchema),
   async (req, res) => {
     const data = orderItemsDTORequestSchema.parse(req);
-    const promises = data.body.map((item) => {
-      return addOrderItem(data.params.id, item.itemId, item.quantity);
-    });
-    const order = await Promise.all(promises).then(() =>
-      getOrderDetail(data.params.id)
-    );
+    const order = await addOrderItems(data.params.id, data.body);
 
     if (order != null) {
       res.status(201).json(order);
