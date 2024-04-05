@@ -1,5 +1,11 @@
 import { PrismaClient } from "@prisma/client";
-import { BasicOrder, Order, OrderDTO, OrderDetail } from "../types";
+import {
+  BasicOrder,
+  Order,
+  OrderDTO,
+  OrderDetail,
+  orderItemDTO,
+} from "../types";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const prisma = new PrismaClient();
@@ -76,16 +82,23 @@ export function deleteOrder(orderId: string): Promise<Order | null> {
     });
 }
 
-export function addOrderItem(
+export function addOrderItems(
   orderId: string,
-  itemId: number,
-  quantity: number
-): Promise<string | null> {
-  return prisma.orderItem
-    .create({
-      data: { orderId: orderId, itemId: itemId, quantity: quantity },
+  items: orderItemDTO[]
+): Promise<OrderDetail | null> {
+  return Promise.all(
+    items.map((item) => {
+      return prisma.orderItem.create({
+        data: {
+          orderId: orderId,
+          itemId: item.itemId,
+          quantity: item.quantity,
+        },
+      });
     })
-    .then((item) => item.orderId);
+  ).then(() => {
+    return getOrderDetail(orderId);
+  });
 }
 
 export function deleteOrderItem(
