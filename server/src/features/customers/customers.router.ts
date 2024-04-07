@@ -42,7 +42,13 @@ customersRouter.get("/:id", validate(idUUIDRequestSchema), async (req, res) => {
       res.json(customer);
     }
   } else {
-    res.status(404).json({ message: "Customer Not Found" });
+    if (req.headers["accept"] == "application/xml") {
+      res
+        .status(404)
+        .send(create().ele("error", { message: "Customer Not Found" }).end());
+    } else {
+      res.status(404).json({ message: "Customer Not Found" });
+    }
   }
 });
 
@@ -92,9 +98,19 @@ customersRouter.post(
     const data = customerPOSTRequestSchema.parse(req);
     const customer = await upsertCustomer(data.body);
     if (customer != null) {
-      res.status(201).json(customer);
+      if (req.headers["accept"] == "application/xml") {
+        res.status(201).send(create().ele("customer", customer).end());
+      } else {
+        res.status(201).json(customer);
+      }
     } else {
-      res.status(500).json({ message: "Creation failed" });
+      if (req.headers["accept"] == "application/xml") {
+        res
+          .status(500)
+          .send(create().ele("error", { message: "Creation failed" }).end());
+      } else {
+        res.status(500).json({ message: "Creation failed" });
+      }
     }
   }
 );
@@ -120,9 +136,19 @@ customersRouter.put(
     const data = customerPUTRequestSchema.parse(req);
     const customer = await upsertCustomer(data.body, data.params.id);
     if (customer != null) {
-      res.json(customer);
+      if (req.headers["accept"] == "application/xml") {
+        res.status(200).send(create().ele("customer", customer).end());
+      } else {
+        res.json(customer);
+      }
     } else {
-      res.status(404).json({ message: "Customer Not Found" });
+      if (req.headers["accept"] == "application/xml") {
+        res
+          .status(404)
+          .send(create().ele("error", { message: "Customer Not Found" }).end());
+      } else {
+        res.status(404).json({ message: "Customer Not Found" });
+      }
     }
   }
 );

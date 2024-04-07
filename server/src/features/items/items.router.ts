@@ -44,7 +44,13 @@ itemsRouter.get("/:id", validate(idNumberRequestSchema), async (req, res) => {
       res.json(item);
     }
   } else {
-    res.status(404).json({ message: "Item Not Found" });
+    if (req.headers["accept"] == "application/xml") {
+      res
+        .status(404)
+        .send(create().ele("error", { message: "Item Not Found" }).end());
+    } else {
+      res.status(404).json({ message: "Item Not Found" });
+    }
   }
 });
 

@@ -16,6 +16,7 @@ import {
   pagingRequestSchema,
 } from "../types";
 import { validate } from "../../middleware/validation.middleware";
+import { create } from "xmlbuilder2";
 
 export const ordersRouter = express.Router();
 
@@ -40,9 +41,19 @@ ordersRouter.post("/", validate(orderPOSTRequestSchema), async (req, res) => {
   const data = orderPOSTRequestSchema.parse(req);
   const order = await upsertOrder(data.body);
   if (order != null) {
-    res.status(201).json(order);
+    if (req.headers["accept"] == "application/xml") {
+      res.status(201).send(create().ele("order", order).end());
+    } else {
+      res.status(201).json(order);
+    }
   } else {
-    res.status(500).json({ message: "Creation failed" });
+    if (req.headers["accept"] == "application/xml") {
+      res
+        .status(500)
+        .send(create().ele("error", { message: "Creation failed" }).end());
+    } else {
+      res.status(500).json({ message: "Creation failed" });
+    }
   }
 });
 
@@ -74,9 +85,21 @@ ordersRouter.delete(
     const data = idItemIdUUIDRequestSchema.parse(req);
     const order = await deleteOrderItem(data.params.id, data.params.itemId);
     if (order != null) {
-      res.json(order);
+      if (req.headers["accept"] == "application/xml") {
+        res.status(201).send(create().ele("order", order).end());
+      } else {
+        res.status(201).json(order);
+      }
     } else {
-      res.status(404).json({ message: "Order or Item Not Found" });
+      if (req.headers["accept"] == "application/xml") {
+        res
+          .status(404)
+          .send(
+            create().ele("error", { message: "Order or item not found" }).end()
+          );
+      } else {
+        res.status(404).json({ message: "Order or item not found" });
+      }
     }
   }
 );
@@ -89,9 +112,19 @@ ordersRouter.post(
     const order = await addOrderItems(data.params.id, data.body);
 
     if (order != null) {
-      res.status(201).json(order);
+      if (req.headers["accept"] == "application/xml") {
+        res.status(201).send(create().ele("order", order).end());
+      } else {
+        res.status(201).json(order);
+      }
     } else {
-      res.status(500).json({ message: "Addition failed" });
+      if (req.headers["accept"] == "application/xml") {
+        res
+          .status(500)
+          .send(create().ele("error", { message: "Creation failed" }).end());
+      } else {
+        res.status(500).json({ message: "Creation failed" });
+      }
     }
   }
 );
