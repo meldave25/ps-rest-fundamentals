@@ -44,10 +44,13 @@ export function getOrderDetail(orderId: string): Promise<OrderDetail | null> {
   });
 }
 
-export function upsertOrder(order: OrderDTO): Promise<Order | null> {
+export function upsertOrder(
+  order: OrderDTO,
+  orderId?: string | null
+): Promise<Order | null> {
   return prisma.order.upsert({
     where: {
-      id: order.id || "",
+      id: orderId || "",
     },
     update: {
       status: order.status,

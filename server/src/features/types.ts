@@ -26,16 +26,19 @@ export type ItemDetail = Item & {
 };
 
 export const itemDTO = z.object({
-  id: z.optional(z.coerce.number().int().positive()),
   name: z.string(),
   description: z.nullable(z.string()),
 });
 
 export type ItemDTO = z.infer<typeof itemDTO>;
 
-export const itemDTORequestSchema = z.object({
+export const itemPOSTRequestSchema = z.object({
   body: itemDTO,
 });
+
+export const itemPUTRequestSchema = idNumberRequestSchema.merge(
+  itemPOSTRequestSchema
+);
 
 export const queryRequestSchema = z.object({
   params: z.object({ query: z.string() }),
@@ -48,16 +51,19 @@ export type Customer = {
 };
 
 export const customerDTO = z.object({
-  id: z.optional(z.string()),
   name: z.string(),
   email: z.string().email(),
 });
 
 export type CustomerDTO = z.infer<typeof customerDTO>;
 
-export const customerDTORequestSchema = z.object({
+export const customerPOSTRequestSchema = z.object({
   body: customerDTO,
 });
+
+export const customerPUTRequestSchema = idUUIDRequestSchema.merge(
+  customerPOSTRequestSchema
+);
 
 export type BasicOrder = {
   id: string;
@@ -85,14 +91,19 @@ export const orderItemDTO = z.object({
 });
 
 export const orderDTO = z.object({
-  id: z.optional(z.string().uuid()),
   customerId: z.string().uuid(),
   status: z.optional(z.string()),
 });
 
-export const orderDTORequestSchema = z.object({
+export const orderPOSTRequestSchema = z.object({
   body: orderDTO,
 });
+
+export const orderPUTRequestSchema = idUUIDRequestSchema.merge(
+  z.object({
+    body: z.object({ status: z.string() }),
+  })
+);
 
 export const orderItemsDTORequestSchema = z.object({
   params: z.object({ id: z.string().uuid() }),
