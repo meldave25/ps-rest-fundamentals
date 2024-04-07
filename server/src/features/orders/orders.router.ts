@@ -34,7 +34,6 @@ ordersRouter.get("/", validate(pagingRequestSchema), async (req, res) => {
 
 ordersRouter.get(
   "/:id",
-  validate(idUUIDRequestSchema),
   checkRequiredPermission(OrdersPermissions.Read_Single),
   validate(idUUIDRequestSchema),
   async (req, res) => {
@@ -70,7 +69,6 @@ ordersRouter.post("/", validate(orderPOSTRequestSchema), async (req, res) => {
 
 ordersRouter.delete(
   "/:id",
-  validate(idUUIDRequestSchema),
   checkRequiredPermission(SecurityPermissions.Deny),
   validate(idUUIDRequestSchema),
   async (req, res) => {

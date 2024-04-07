@@ -12,7 +12,10 @@ import {
 } from "../types";
 import { validate } from "../../middleware/validation.middleware";
 import { create } from "xmlbuilder2";
-import { SecurityPermissions } from "../../config/permissions";
+import {
+  ItemsPermissions,
+  SecurityPermissions,
+} from "../../config/permissions";
 import {
   checkRequiredPermission,
   validateAccessToken,
@@ -59,15 +62,21 @@ itemsRouter.get("/:id", validate(idNumberRequestSchema), async (req, res) => {
   }
 });
 
-itemsRouter.post("/", validate(itemPOSTRequestSchema), async (req, res) => {
-  const data = itemPOSTRequestSchema.parse(req);
-  const item = await upsertItem(data.body);
-  if (item != null) {
-    res.status(201).json(item);
-  } else {
-    res.status(500).json({ message: "Creation failed" });
+itemsRouter.post(
+  "/",
+  validateAccessToken,
+  checkRequiredPermission(ItemsPermissions.Write),
+  validate(itemPOSTRequestSchema),
+  async (req, res) => {
+    const data = itemPOSTRequestSchema.parse(req);
+    const item = await upsertItem(data.body);
+    if (item != null) {
+      res.status(201).json(item);
+    } else {
+      res.status(500).json({ message: "Creation failed" });
+    }
   }
-});
+);
 
 itemsRouter.delete(
   "/:id",
@@ -85,15 +94,21 @@ itemsRouter.delete(
   }
 );
 
-itemsRouter.put("/:id", validate(itemPUTRequestSchema), async (req, res) => {
-  const data = itemPUTRequestSchema.parse(req);
-  const item = await upsertItem(data.body, data.params.id);
-  if (item != null) {
-    res.json(item);
-  } else {
-    res.status(404).json({ message: "Item Not Found" });
+itemsRouter.put(
+  "/:id",
+  validateAccessToken,
+  checkRequiredPermission(ItemsPermissions.Write),
+  validate(itemPUTRequestSchema),
+  async (req, res) => {
+    const data = itemPUTRequestSchema.parse(req);
+    const item = await upsertItem(data.body, data.params.id);
+    if (item != null) {
+      res.json(item);
+    } else {
+      res.status(404).json({ message: "Item Not Found" });
+    }
   }
-});
+);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function buildImageUrl(req: any, id: number): string {

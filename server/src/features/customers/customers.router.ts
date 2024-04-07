@@ -25,7 +25,6 @@ export const customersRouter = express.Router();
 
 customersRouter.get(
   "/",
-
   checkRequiredPermission(CustomersPermissions.Read),
   async (req, res) => {
     const customers = await getCustomers();
