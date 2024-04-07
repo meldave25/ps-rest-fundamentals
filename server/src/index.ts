@@ -16,20 +16,13 @@ const PORT = parseInt(process.env.PORT, 10);
 const app = express();
 
 app.use(express.json());
-app.use(
-  xmlparser({
-    explicitArray: false,
-    normalizeTags: false,
-    explicitRoot: false,
-  })
-);
+app.use(xmlparser({ explicitArray: false, explicitRoot: false }));
 
 // configure cors
 app.use(cors());
 
 // register routes
 app.use("/", routes);
-
 
 // register middleware
 app.use(express.static("public"));

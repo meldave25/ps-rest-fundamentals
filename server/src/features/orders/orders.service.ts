@@ -1,5 +1,11 @@
 import { PrismaClient } from "@prisma/client";
-import { BasicOrder, Order, OrderDTO, OrderDetail } from "../types";
+import {
+  BasicOrder,
+  Order,
+  OrderDTO,
+  OrderDetail,
+  orderItemDTO,
+} from "../types";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 
 const prisma = new PrismaClient();
@@ -38,10 +44,13 @@ export function getOrderDetail(orderId: string): Promise<OrderDetail | null> {
   });
 }
 
-export function upsertOrder(order: OrderDTO): Promise<Order | null> {
+export function upsertOrder(
+  order: OrderDTO,
+  orderId?: string | null
+): Promise<Order | null> {
   return prisma.order.upsert({
     where: {
-      id: order.id || "",
+      id: orderId || "",
     },
     update: {
       status: order.status,
@@ -76,16 +85,23 @@ export function deleteOrder(orderId: string): Promise<Order | null> {
     });
 }
 
-export function addOrderItem(
+export function addOrderItems(
   orderId: string,
-  itemId: number,
-  quantity: number
-): Promise<string | null> {
-  return prisma.orderItem
-    .create({
-      data: { orderId: orderId, itemId: itemId, quantity: quantity },
+  items: orderItemDTO[]
+): Promise<OrderDetail | null> {
+  return Promise.all(
+    items.map((item) => {
+      return prisma.orderItem.create({
+        data: {
+          orderId: orderId,
+          itemId: item.itemId,
+          quantity: item.quantity,
+        },
+      });
     })
-    .then((item) => item.orderId);
+  ).then(() => {
+    return getOrderDetail(orderId);
+  });
 }
 
 export function deleteOrderItem(

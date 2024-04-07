@@ -7,8 +7,9 @@ import {
   searchCustomers,
 } from "./customers.service";
 import {
+  customerPOSTRequestSchema,
+  customerPUTRequestSchema,
   idUUIDRequestSchema,
-  customerDTORequestSchema,
   queryRequestSchema,
 } from "../types";
 import { validate } from "../../middleware/validation.middleware";
@@ -41,24 +42,25 @@ customersRouter.get(
   }
 );
 
-customersRouter.get(
-  "/:id",
-  checkRequiredPermission(CustomersPermissions.Read_Single),
-  validate(idUUIDRequestSchema),
-  async (req, res) => {
-    const data = idUUIDRequestSchema.parse(req);
-    const customer = await getCustomerDetail(data.params.id);
-    if (customer != null) {
-      if (req.headers["accept"] == "application/xml") {
-        res.status(200).send(create().ele("customer", customer).end());
-      } else {
-        res.json(customer);
-      }
+customersRouter.get("/:id", validate(idUUIDRequestSchema), async (req, res) => {
+  const data = idUUIDRequestSchema.parse(req);
+  const customer = await getCustomerDetail(data.params.id);
+  if (customer != null) {
+    if (req.headers["accept"] == "application/xml") {
+      res.status(200).send(create().ele("customer", customer).end());
+    } else {
+      res.json(customer);
+    }
+  } else {
+    if (req.headers["accept"] == "application/xml") {
+      res
+        .status(404)
+        .send(create().ele("error", { message: "Customer Not Found" }).end());
     } else {
       res.status(404).json({ message: "Customer Not Found" });
     }
   }
-);
+});
 
 customersRouter.get(
   "/:id/orders",
@@ -102,15 +104,24 @@ customersRouter.get(
 
 customersRouter.post(
   "/",
-  checkRequiredPermission(CustomersPermissions.Create),
-  validate(customerDTORequestSchema),
+  validate(customerPOSTRequestSchema),
   async (req, res) => {
-    const data = customerDTORequestSchema.parse(req);
+    const data = customerPOSTRequestSchema.parse(req);
     const customer = await upsertCustomer(data.body);
     if (customer != null) {
-      res.status(201).json(customer);
+      if (req.headers["accept"] == "application/xml") {
+        res.status(201).send(create().ele("customer", customer).end());
+      } else {
+        res.status(201).json(customer);
+      }
     } else {
-      res.status(500).json({ message: "Creation failed" });
+      if (req.headers["accept"] == "application/xml") {
+        res
+          .status(500)
+          .send(create().ele("error", { message: "Creation failed" }).end());
+      } else {
+        res.status(500).json({ message: "Creation failed" });
+      }
     }
   }
 );
@@ -131,16 +142,25 @@ customersRouter.delete(
 );
 
 customersRouter.put(
-  "/",
-  checkRequiredPermission(CustomersPermissions.Write),
-  validate(customerDTORequestSchema),
+  "/:id",
+  validate(customerPUTRequestSchema),
   async (req, res) => {
-    const data = customerDTORequestSchema.parse(req);
-    const customer = await upsertCustomer(data.body);
+    const data = customerPUTRequestSchema.parse(req);
+    const customer = await upsertCustomer(data.body, data.params.id);
     if (customer != null) {
-      res.json(customer);
+      if (req.headers["accept"] == "application/xml") {
+        res.status(200).send(create().ele("customer", customer).end());
+      } else {
+        res.json(customer);
+      }
     } else {
-      res.status(404).json({ message: "Customer Not Found" });
+      if (req.headers["accept"] == "application/xml") {
+        res
+          .status(404)
+          .send(create().ele("error", { message: "Customer Not Found" }).end());
+      } else {
+        res.status(404).json({ message: "Customer Not Found" });
+      }
     }
   }
 );
