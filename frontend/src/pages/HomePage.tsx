@@ -36,7 +36,7 @@ const HomePage: React.FunctionComponent<IPageProps> = () => {
       return (
         <Grid container spacing={1} sx={{ p: 1 }}>
           {items.map((item) => {
-            return <ItemComponent item={item} key={item.id} />;
+            return <ItemComponent item={item} />;
           })}
         </Grid>
       );

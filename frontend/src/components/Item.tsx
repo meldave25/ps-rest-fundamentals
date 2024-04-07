@@ -10,7 +10,7 @@ import { Item } from "../types";
 
 export default function ItemComponent({ item }: { item: Item }) {
   return (
-    <Grid item lg={2}>
+    <Grid item key={item.id} lg={2}>
       <Card variant="outlined">
         <CardActionArea href={"/item/" + item.id}>
           <CardMedia
