@@ -5,7 +5,11 @@ import {
   getItemDetail,
   getItems,
 } from "./items.service";
-import { idNumberRequestSchema, itemDTORequestSchema } from "../types";
+import {
+  idNumberRequestSchema,
+  itemPOSTRequestSchema,
+  itemPUTRequestSchema,
+} from "../types";
 import { validate } from "../../middleware/validation.middleware";
 import { create } from "xmlbuilder2";
 
@@ -44,8 +48,8 @@ itemsRouter.get("/:id", validate(idNumberRequestSchema), async (req, res) => {
   }
 });
 
-itemsRouter.post("/", validate(itemDTORequestSchema), async (req, res) => {
-  const data = itemDTORequestSchema.parse(req);
+itemsRouter.post("/", validate(itemPOSTRequestSchema), async (req, res) => {
+  const data = itemPOSTRequestSchema.parse(req);
   const item = await upsertItem(data.body);
   if (item != null) {
     res.status(201).json(item);
@@ -68,9 +72,9 @@ itemsRouter.delete(
   }
 );
 
-itemsRouter.put("/", validate(itemDTORequestSchema), async (req, res) => {
-  const data = itemDTORequestSchema.parse(req);
-  const item = await upsertItem(data.body);
+itemsRouter.put("/:id", validate(itemPUTRequestSchema), async (req, res) => {
+  const data = itemPUTRequestSchema.parse(req);
+  const item = await upsertItem(data.body, data.params.id);
   if (item != null) {
     res.json(item);
   } else {

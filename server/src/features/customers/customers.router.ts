@@ -7,8 +7,9 @@ import {
   searchCustomers,
 } from "./customers.service";
 import {
+  customerPOSTRequestSchema,
+  customerPUTRequestSchema,
   idUUIDRequestSchema,
-  customerDTORequestSchema,
   queryRequestSchema,
 } from "../types";
 import { validate } from "../../middleware/validation.middleware";
@@ -20,27 +21,26 @@ export const customersRouter = express.Router();
 customersRouter.get("/", async (req, res) => {
   const customers = await getCustomers();
   if (req.headers["accept"] == "application/xml") {
-      const root = create().ele("customers");
-      customers.forEach((i) => {
-        root.ele("customer", i);
-      });
+    const root = create().ele("customers");
+    customers.forEach((i) => {
+      root.ele("customer", i);
+    });
 
-      res.status(200).send(root.end({ prettyPrint: true }));
-    } else {
-      res.json(customers);
-    }
+    res.status(200).send(root.end({ prettyPrint: true }));
+  } else {
+    res.json(customers);
   }
-);
+});
 
 customersRouter.get("/:id", validate(idUUIDRequestSchema), async (req, res) => {
   const data = idUUIDRequestSchema.parse(req);
   const customer = await getCustomerDetail(data.params.id);
   if (customer != null) {
-      if (req.headers["accept"] == "application/xml") {
-        res.status(200).send(create().ele("customer", customer).end());
-      } else {
-    res.json(customer);
-      }
+    if (req.headers["accept"] == "application/xml") {
+      res.status(200).send(create().ele("customer", customer).end());
+    } else {
+      res.json(customer);
+    }
   } else {
     res.status(404).json({ message: "Customer Not Found" });
   }
@@ -60,8 +60,8 @@ customersRouter.get(
 
       res.status(200).send(root.end({ prettyPrint: true }));
     } else {
-    res.json(orders);
-  }
+      res.json(orders);
+    }
   }
 );
 
@@ -80,16 +80,16 @@ customersRouter.get(
 
       res.status(200).send(root.end({ prettyPrint: true }));
     } else {
-    res.json(customers);
-  }
+      res.json(customers);
+    }
   }
 );
 
 customersRouter.post(
   "/",
-  validate(customerDTORequestSchema),
+  validate(customerPOSTRequestSchema),
   async (req, res) => {
-    const data = customerDTORequestSchema.parse(req);
+    const data = customerPOSTRequestSchema.parse(req);
     const customer = await upsertCustomer(data.body);
     if (customer != null) {
       res.status(201).json(customer);
@@ -114,11 +114,11 @@ customersRouter.delete(
 );
 
 customersRouter.put(
-  "/",
-  validate(customerDTORequestSchema),
+  "/:id",
+  validate(customerPUTRequestSchema),
   async (req, res) => {
-    const data = customerDTORequestSchema.parse(req);
-    const customer = await upsertCustomer(data.body);
+    const data = customerPUTRequestSchema.parse(req);
+    const customer = await upsertCustomer(data.body, data.params.id);
     if (customer != null) {
       res.json(customer);
     } else {

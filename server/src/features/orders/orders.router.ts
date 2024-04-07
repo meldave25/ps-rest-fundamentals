@@ -10,8 +10,9 @@ import {
 import {
   idItemIdUUIDRequestSchema,
   idUUIDRequestSchema,
-  orderDTORequestSchema,
   orderItemsDTORequestSchema,
+  orderPOSTRequestSchema,
+  orderPUTRequestSchema,
   pagingRequestSchema,
 } from "../types";
 import { validate } from "../../middleware/validation.middleware";
@@ -35,8 +36,8 @@ ordersRouter.get("/:id", validate(idUUIDRequestSchema), async (req, res) => {
   }
 });
 
-ordersRouter.post("/", validate(orderDTORequestSchema), async (req, res) => {
-  const data = orderDTORequestSchema.parse(req);
+ordersRouter.post("/", validate(orderPOSTRequestSchema), async (req, res) => {
+  const data = orderPOSTRequestSchema.parse(req);
   const order = await upsertOrder(data.body);
   if (order != null) {
     res.status(201).json(order);
@@ -55,9 +56,10 @@ ordersRouter.delete("/:id", validate(idUUIDRequestSchema), async (req, res) => {
   }
 });
 
-ordersRouter.put("/", validate(orderDTORequestSchema), async (req, res) => {
-  const data = orderDTORequestSchema.parse(req);
-  const order = await upsertOrder(data.body);
+ordersRouter.put("/:id", validate(orderPUTRequestSchema), async (req, res) => {
+  const data = orderPUTRequestSchema.parse(req);
+  const orderData = { customerId: "", ...data.body };
+  const order = await upsertOrder(orderData, data.params.id);
   if (order != null) {
     res.json(order);
   } else {
