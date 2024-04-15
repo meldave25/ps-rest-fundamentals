@@ -7,6 +7,7 @@ export enum OrdersPermissions {
 
 export enum ItemsPermissions {
   Write = "write:items",
+  Create = "create:items",
 }
 
 export enum CustomersPermissions {
