@@ -65,7 +65,7 @@ itemsRouter.get("/:id", validate(idNumberRequestSchema), async (req, res) => {
 itemsRouter.post(
   "/",
   validateAccessToken,
-  checkRequiredPermission(ItemsPermissions.Write),
+  checkRequiredPermission(ItemsPermissions.Create),
   validate(itemPOSTRequestSchema),
   async (req, res) => {
     const data = itemPOSTRequestSchema.parse(req);
