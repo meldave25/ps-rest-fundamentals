@@ -21,7 +21,7 @@ import {
   OrdersPermissions,
   SecurityPermissions,
 } from "../../config/permissions";
-import { checkRequiredPermission } from "../../middleware/auth0.middleware";
+import { checkRequiredScope } from "../../middleware/auth0.middleware";
 
 export const ordersRouter = express.Router();
 
@@ -34,7 +34,7 @@ ordersRouter.get("/", validate(pagingRequestSchema), async (req, res) => {
 
 ordersRouter.get(
   "/:id",
-  checkRequiredPermission(OrdersPermissions.Read_Single),
+  checkRequiredScope(OrdersPermissions.Read_Single),
   validate(idUUIDRequestSchema),
   async (req, res) => {
     const data = idUUIDRequestSchema.parse(req);
@@ -69,7 +69,7 @@ ordersRouter.post("/", validate(orderPOSTRequestSchema), async (req, res) => {
 
 ordersRouter.delete(
   "/:id",
-  checkRequiredPermission(SecurityPermissions.Deny),
+  checkRequiredScope(SecurityPermissions.Deny),
   validate(idUUIDRequestSchema),
   async (req, res) => {
     const data = idUUIDRequestSchema.parse(req);
@@ -95,7 +95,7 @@ ordersRouter.put("/:id", validate(orderPUTRequestSchema), async (req, res) => {
 
 ordersRouter.delete(
   "/:id/items/:itemId",
-  checkRequiredPermission(OrdersPermissions.Create),
+  checkRequiredScope(OrdersPermissions.Create),
   validate(idItemIdUUIDRequestSchema),
   async (req, res) => {
     const data = idItemIdUUIDRequestSchema.parse(req);
@@ -122,7 +122,7 @@ ordersRouter.delete(
 
 ordersRouter.post(
   "/:id/items",
-  checkRequiredPermission(OrdersPermissions.Create),
+  checkRequiredScope(OrdersPermissions.Create),
   validate(orderItemsDTORequestSchema),
   async (req, res) => {
     const data = orderItemsDTORequestSchema.parse(req);

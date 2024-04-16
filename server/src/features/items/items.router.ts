@@ -17,7 +17,7 @@ import {
   SecurityPermissions,
 } from "../../config/permissions";
 import {
-  checkRequiredPermission,
+  checkRequiredScope,
   validateAccessToken,
 } from "../../middleware/auth0.middleware";
 
@@ -65,7 +65,7 @@ itemsRouter.get("/:id", validate(idNumberRequestSchema), async (req, res) => {
 itemsRouter.post(
   "/",
   validateAccessToken,
-  checkRequiredPermission(ItemsPermissions.Create),
+  checkRequiredScope(ItemsPermissions.Create),
   validate(itemPOSTRequestSchema),
   async (req, res) => {
     const data = itemPOSTRequestSchema.parse(req);
@@ -81,7 +81,7 @@ itemsRouter.post(
 itemsRouter.delete(
   "/:id",
   validateAccessToken,
-  checkRequiredPermission(SecurityPermissions.Deny),
+  checkRequiredScope(SecurityPermissions.Deny),
   validate(idNumberRequestSchema),
   async (req, res) => {
     const data = idNumberRequestSchema.parse(req);
@@ -97,7 +97,7 @@ itemsRouter.delete(
 itemsRouter.put(
   "/:id",
   validateAccessToken,
-  checkRequiredPermission(ItemsPermissions.Write),
+  checkRequiredScope(ItemsPermissions.Write),
   validate(itemPUTRequestSchema),
   async (req, res) => {
     const data = itemPUTRequestSchema.parse(req);

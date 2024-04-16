@@ -15,7 +15,7 @@ import {
 import { validate } from "../../middleware/validation.middleware";
 import { create } from "xmlbuilder2";
 import { getOrdersForCustomer } from "../orders/orders.service";
-import { checkRequiredPermission } from "../../middleware/auth0.middleware";
+import { checkRequiredScope } from "../../middleware/auth0.middleware";
 import {
   CustomersPermissions,
   SecurityPermissions,
@@ -25,7 +25,7 @@ export const customersRouter = express.Router();
 
 customersRouter.get(
   "/",
-  checkRequiredPermission(CustomersPermissions.Read),
+  checkRequiredScope(CustomersPermissions.Read),
   async (req, res) => {
     const customers = await getCustomers();
     if (req.headers["accept"] == "application/xml") {
@@ -63,7 +63,7 @@ customersRouter.get("/:id", validate(idUUIDRequestSchema), async (req, res) => {
 
 customersRouter.get(
   "/:id/orders",
-  checkRequiredPermission(CustomersPermissions.Read_Customer_Orders),
+  checkRequiredScope(CustomersPermissions.Read_Customer_Orders),
   validate(idUUIDRequestSchema),
   async (req, res) => {
     const data = idUUIDRequestSchema.parse(req);
@@ -83,7 +83,7 @@ customersRouter.get(
 
 customersRouter.get(
   "/search/:query",
-  checkRequiredPermission(CustomersPermissions.Read),
+  checkRequiredScope(CustomersPermissions.Read),
   validate(queryRequestSchema),
   async (req, res) => {
     const data = queryRequestSchema.parse(req);
@@ -127,7 +127,7 @@ customersRouter.post(
 
 customersRouter.delete(
   "/:id",
-  checkRequiredPermission(SecurityPermissions.Deny),
+  checkRequiredScope(SecurityPermissions.Deny),
   validate(idUUIDRequestSchema),
   async (req, res) => {
     const data = idUUIDRequestSchema.parse(req);
