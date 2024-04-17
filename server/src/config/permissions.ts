@@ -13,7 +13,6 @@ export enum ItemsPermissions {
 export enum CustomersPermissions {
   Read = "read:customers",
   Read_Single = "read:customers-single",
-  Read_Customer_Orders = "read:customer-orders",
   Write = "write:customers",
   Create = "create:customers",
 }
