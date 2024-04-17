@@ -41,29 +41,34 @@ customersRouter.get(
   }
 );
 
-customersRouter.get("/:id", validate(idUUIDRequestSchema), async (req, res) => {
-  const data = idUUIDRequestSchema.parse(req);
-  const customer = await getCustomerDetail(data.params.id);
-  if (customer != null) {
-    if (req.headers["accept"] == "application/xml") {
-      res.status(200).send(create().ele("customer", customer).end());
+customersRouter.get(
+  "/:id",
+  checkRequiredScope(CustomersPermissions.Read_Single),
+  validate(idUUIDRequestSchema),
+  async (req, res) => {
+    const data = idUUIDRequestSchema.parse(req);
+    const customer = await getCustomerDetail(data.params.id);
+    if (customer != null) {
+      if (req.headers["accept"] == "application/xml") {
+        res.status(200).send(create().ele("customer", customer).end());
+      } else {
+        res.json(customer);
+      }
     } else {
-      res.json(customer);
-    }
-  } else {
-    if (req.headers["accept"] == "application/xml") {
-      res
-        .status(404)
-        .send(create().ele("error", { message: "Customer Not Found" }).end());
-    } else {
-      res.status(404).json({ message: "Customer Not Found" });
+      if (req.headers["accept"] == "application/xml") {
+        res
+          .status(404)
+          .send(create().ele("error", { message: "Customer Not Found" }).end());
+      } else {
+        res.status(404).json({ message: "Customer Not Found" });
+      }
     }
   }
-});
+);
 
 customersRouter.get(
   "/:id/orders",
-  checkRequiredScope(CustomersPermissions.Read_Customer_Orders),
+  checkRequiredScope(CustomersPermissions.Read_Single),
   validate(idUUIDRequestSchema),
   async (req, res) => {
     const data = idUUIDRequestSchema.parse(req);
@@ -103,6 +108,7 @@ customersRouter.get(
 
 customersRouter.post(
   "/",
+  checkRequiredScope(CustomersPermissions.Create),
   validate(customerPOSTRequestSchema),
   async (req, res) => {
     const data = customerPOSTRequestSchema.parse(req);
@@ -142,6 +148,7 @@ customersRouter.delete(
 
 customersRouter.put(
   "/:id",
+  checkRequiredScope(CustomersPermissions.Write),
   validate(customerPUTRequestSchema),
   async (req, res) => {
     const data = customerPUTRequestSchema.parse(req);

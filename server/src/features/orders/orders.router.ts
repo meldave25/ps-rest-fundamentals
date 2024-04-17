@@ -25,12 +25,17 @@ import { checkRequiredScope } from "../../middleware/auth0.middleware";
 
 export const ordersRouter = express.Router();
 
-ordersRouter.get("/", validate(pagingRequestSchema), async (req, res) => {
-  const data = pagingRequestSchema.parse(req);
-  const orders = await getOrders(data.query.skip, data.query.take);
+ordersRouter.get(
+  "/",
+  checkRequiredScope(OrdersPermissions.Read),
+  validate(pagingRequestSchema),
+  async (req, res) => {
+    const data = pagingRequestSchema.parse(req);
+    const orders = await getOrders(data.query.skip, data.query.take);
 
-  res.json(orders);
-});
+    res.json(orders);
+  }
+);
 
 ordersRouter.get(
   "/:id",
@@ -47,25 +52,30 @@ ordersRouter.get(
   }
 );
 
-ordersRouter.post("/", validate(orderPOSTRequestSchema), async (req, res) => {
-  const data = orderPOSTRequestSchema.parse(req);
-  const order = await upsertOrder(data.body);
-  if (order != null) {
-    if (req.headers["accept"] == "application/xml") {
-      res.status(201).send(create().ele("order", order).end());
+ordersRouter.post(
+  "/",
+  checkRequiredScope(OrdersPermissions.Create),
+  validate(orderPOSTRequestSchema),
+  async (req, res) => {
+    const data = orderPOSTRequestSchema.parse(req);
+    const order = await upsertOrder(data.body);
+    if (order != null) {
+      if (req.headers["accept"] == "application/xml") {
+        res.status(201).send(create().ele("order", order).end());
+      } else {
+        res.status(201).json(order);
+      }
     } else {
-      res.status(201).json(order);
-    }
-  } else {
-    if (req.headers["accept"] == "application/xml") {
-      res
-        .status(500)
-        .send(create().ele("error", { message: "Creation failed" }).end());
-    } else {
-      res.status(500).json({ message: "Creation failed" });
+      if (req.headers["accept"] == "application/xml") {
+        res
+          .status(500)
+          .send(create().ele("error", { message: "Creation failed" }).end());
+      } else {
+        res.status(500).json({ message: "Creation failed" });
+      }
     }
   }
-});
+);
 
 ordersRouter.delete(
   "/:id",
@@ -82,16 +92,21 @@ ordersRouter.delete(
   }
 );
 
-ordersRouter.put("/:id", validate(orderPUTRequestSchema), async (req, res) => {
-  const data = orderPUTRequestSchema.parse(req);
-  const orderData = { customerId: "", ...data.body };
-  const order = await upsertOrder(orderData, data.params.id);
-  if (order != null) {
-    res.json(order);
-  } else {
-    res.status(404).json({ message: "Order Not Found" });
+ordersRouter.put(
+  "/:id",
+  checkRequiredScope(OrdersPermissions.Write),
+  validate(orderPUTRequestSchema),
+  async (req, res) => {
+    const data = orderPUTRequestSchema.parse(req);
+    const orderData = { customerId: "", ...data.body };
+    const order = await upsertOrder(orderData, data.params.id);
+    if (order != null) {
+      res.json(order);
+    } else {
+      res.status(404).json({ message: "Order Not Found" });
+    }
   }
-});
+);
 
 ordersRouter.delete(
   "/:id/items/:itemId",
