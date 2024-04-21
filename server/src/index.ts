@@ -5,7 +5,6 @@ import { errorHandler } from "./middleware/error.middleware";
 import { routes } from "./features/routes";
 import xmlparser from "express-xml-bodyparser";
 import cors from "cors";
-import compression from "compression";
 
 dotenv.config();
 
@@ -18,9 +17,6 @@ const app = express();
 
 app.use(express.json());
 app.use(xmlparser({ explicitArray: false, explicitRoot: false }));
-
-// configure gzip
-app.use(compression());
 
 // configure cors
 app.use(cors());

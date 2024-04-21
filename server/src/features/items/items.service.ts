@@ -52,19 +52,24 @@ export function upsertItem(
   item: ItemDTO,
   itemId?: number | null
 ): Promise<Item | null> {
-  return prisma.item.upsert({
-    where: {
-      id: itemId || -1,
-    },
-    update: {
-      name: item.name,
-      description: item.description,
-    },
-    create: {
-      name: item.name,
-      description: item.description,
-    },
-  });
+  return prisma.item
+    .upsert({
+      where: {
+        id: itemId || -1,
+      },
+      update: {
+        name: item.name,
+        description: item.description,
+      },
+      create: {
+        name: item.name,
+        description: item.description,
+      },
+    })
+    .then((item) => {
+      cache.set(item.id, item);
+      return item;
+    });
 }
 
 export function deleteItem(itemId: number): Promise<Item | null> {
