@@ -49,25 +49,19 @@ export function getItemDetail(itemId: number): Promise<ItemDetail | null> {
 }
 
 export function upsertItem(item: ItemDTO): Promise<Item | null> {
-  return prisma.item
-    .upsert({
-      where: {
-        id: item.id || -1,
-      },
-      update: {
-        name: item.name,
-        description: item.description,
-      },
-      create: {
-        name: item.name,
-        description: item.description,
-      },
-    })
-    .then((item) => {
-      cache.delete(listKey);
-      cache.delete(item.id);
-      return item;
-    });
+  return prisma.item.upsert({
+    where: {
+      id: item.id || -1,
+    },
+    update: {
+      name: item.name,
+      description: item.description,
+    },
+    create: {
+      name: item.name,
+      description: item.description,
+    },
+  });
 }
 
 export function deleteItem(itemId: number): Promise<Item | null> {

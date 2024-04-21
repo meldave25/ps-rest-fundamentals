@@ -36,11 +36,12 @@ export function getCustomerDetail(
 }
 
 export function upsertCustomer(
-  customer: CustomerDTO
+  customer: CustomerDTO,
+  customerId?: string | null
 ): Promise<Customer | null> {
   return prisma.customer.upsert({
     where: {
-      id: customer.id || "",
+      id: customerId || "",
     },
     update: {
       name: customer.name,
