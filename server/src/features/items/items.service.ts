@@ -48,10 +48,13 @@ export function getItemDetail(itemId: number): Promise<ItemDetail | null> {
     });
 }
 
-export function upsertItem(item: ItemDTO): Promise<Item | null> {
+export function upsertItem(
+  item: ItemDTO,
+  itemId?: number | null
+): Promise<Item | null> {
   return prisma.item.upsert({
     where: {
-      id: item.id || -1,
+      id: itemId || -1,
     },
     update: {
       name: item.name,
