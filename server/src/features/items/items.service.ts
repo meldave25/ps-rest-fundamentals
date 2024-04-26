@@ -5,16 +5,14 @@ import TTLCache from "@isaacs/ttlcache";
 
 const options = { ttl: 1000 * 60 * 60 * 24 };
 const cache = new TTLCache(options);
-
-const prisma = new PrismaClient();
 const listKey = "items-list";
 
+const prisma = new PrismaClient();
+
 export function getItems(): Promise<Item[]> {
-  if (cache.has(listKey)) {
-    const cacheItems = cache.get<Item[]>(listKey);
-    if (cacheItems != undefined) {
-      return Promise.resolve(cacheItems);
-    }
+  const cacheItems = cache.get<Item[]>(listKey);
+  if (cacheItems != undefined) {
+    return Promise.resolve(cacheItems);
   }
 
   return prisma.item
@@ -31,11 +29,9 @@ export function getItems(): Promise<Item[]> {
 }
 
 export function getItemDetail(itemId: number): Promise<ItemDetail | null> {
-  if (cache.has(itemId)) {
-    const cacheItem = cache.get<ItemDetail>(itemId);
-    if (cacheItem != undefined) {
-      return Promise.resolve(cacheItem);
-    }
+  const cacheItem = cache.get<ItemDetail>(itemId);
+  if (cacheItem != undefined) {
+    return Promise.resolve(cacheItem);
   }
 
   return prisma.item
@@ -68,6 +64,7 @@ export function upsertItem(
     })
     .then((item) => {
       cache.set(item.id, item);
+      cache.delete(listKey);
       return item;
     });
 }
@@ -88,9 +85,9 @@ export function deleteItem(itemId: number): Promise<Item | null> {
       }
     })
     .then((item) => {
-      cache.delete(listKey);
       if (item != null) {
         cache.delete(item.id);
+        cache.delete(listKey);
       }
 
       return item;
