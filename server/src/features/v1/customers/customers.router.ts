@@ -7,14 +7,15 @@ import {
   searchCustomers,
 } from "./customers.service";
 import {
+  customerPOSTRequestSchema,
+  customerPUTRequestSchema,
   idUUIDRequestSchema,
-  customerDTORequestSchema,
   queryRequestSchema,
 } from "../types";
 import { validate } from "../../../middleware/validation.middleware";
 import { create } from "xmlbuilder2";
 import { getOrdersForCustomer } from "../orders/orders.service";
-import { checkRequiredPermission } from "../../../middleware/auth0.middleware";
+import { checkRequiredScope } from "../../../middleware/auth0.middleware";
 import {
   CustomersPermissions,
   SecurityPermissions,
@@ -24,7 +25,7 @@ export const customersRouter = express.Router();
 
 customersRouter.get(
   "/",
-  checkRequiredPermission(CustomersPermissions.Read),
+  checkRequiredScope(CustomersPermissions.Read),
   async (req, res) => {
     const customers = await getCustomers();
     if (req.headers["accept"] == "application/xml") {
@@ -42,7 +43,7 @@ customersRouter.get(
 
 customersRouter.get(
   "/:id",
-  checkRequiredPermission(CustomersPermissions.Read_Single),
+  checkRequiredScope(CustomersPermissions.Read_Single),
   validate(idUUIDRequestSchema),
   async (req, res) => {
     const data = idUUIDRequestSchema.parse(req);
@@ -54,14 +55,20 @@ customersRouter.get(
         res.json(customer);
       }
     } else {
-      res.status(404).json({ message: "Customer Not Found" });
+      if (req.headers["accept"] == "application/xml") {
+        res
+          .status(404)
+          .send(create().ele("error", { message: "Customer Not Found" }).end());
+      } else {
+        res.status(404).json({ message: "Customer Not Found" });
+      }
     }
   }
 );
 
 customersRouter.get(
   "/:id/orders",
-  checkRequiredPermission(CustomersPermissions.Read_Customer_Orders),
+  checkRequiredScope(CustomersPermissions.Read_Single),
   validate(idUUIDRequestSchema),
   async (req, res) => {
     const data = idUUIDRequestSchema.parse(req);
@@ -81,7 +88,7 @@ customersRouter.get(
 
 customersRouter.get(
   "/search/:query",
-  checkRequiredPermission(CustomersPermissions.Read),
+  checkRequiredScope(CustomersPermissions.Read),
   validate(queryRequestSchema),
   async (req, res) => {
     const data = queryRequestSchema.parse(req);
@@ -101,22 +108,32 @@ customersRouter.get(
 
 customersRouter.post(
   "/",
-  checkRequiredPermission(CustomersPermissions.Create),
-  validate(customerDTORequestSchema),
+  checkRequiredScope(CustomersPermissions.Create),
+  validate(customerPOSTRequestSchema),
   async (req, res) => {
-    const data = customerDTORequestSchema.parse(req);
+    const data = customerPOSTRequestSchema.parse(req);
     const customer = await upsertCustomer(data.body);
     if (customer != null) {
-      res.status(201).json(customer);
+      if (req.headers["accept"] == "application/xml") {
+        res.status(201).send(create().ele("customer", customer).end());
+      } else {
+        res.status(201).json(customer);
+      }
     } else {
-      res.status(500).json({ message: "Creation failed" });
+      if (req.headers["accept"] == "application/xml") {
+        res
+          .status(500)
+          .send(create().ele("error", { message: "Creation failed" }).end());
+      } else {
+        res.status(500).json({ message: "Creation failed" });
+      }
     }
   }
 );
 
 customersRouter.delete(
   "/:id",
-  checkRequiredPermission(SecurityPermissions.Deny),
+  checkRequiredScope(SecurityPermissions.Deny),
   validate(idUUIDRequestSchema),
   async (req, res) => {
     const data = idUUIDRequestSchema.parse(req);
@@ -130,16 +147,26 @@ customersRouter.delete(
 );
 
 customersRouter.put(
-  "/",
-  checkRequiredPermission(CustomersPermissions.Write),
-  validate(customerDTORequestSchema),
+  "/:id",
+  checkRequiredScope(CustomersPermissions.Write),
+  validate(customerPUTRequestSchema),
   async (req, res) => {
-    const data = customerDTORequestSchema.parse(req);
-    const customer = await upsertCustomer(data.body);
+    const data = customerPUTRequestSchema.parse(req);
+    const customer = await upsertCustomer(data.body, data.params.id);
     if (customer != null) {
-      res.json(customer);
+      if (req.headers["accept"] == "application/xml") {
+        res.status(200).send(create().ele("customer", customer).end());
+      } else {
+        res.json(customer);
+      }
     } else {
-      res.status(404).json({ message: "Customer Not Found" });
+      if (req.headers["accept"] == "application/xml") {
+        res
+          .status(404)
+          .send(create().ele("error", { message: "Customer Not Found" }).end());
+      } else {
+        res.status(404).json({ message: "Customer Not Found" });
+      }
     }
   }
 );
