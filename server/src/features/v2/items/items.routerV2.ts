@@ -5,7 +5,11 @@ import {
   getItemDetail,
   getItems,
 } from "./items.serviceV2";
-import { idNumberRequestSchema, itemDTORequestSchema } from "../../v1/types";
+import {
+  idNumberRequestSchema,
+  itemPOSTRequestSchema,
+  itemPUTRequestSchema,
+} from "../../v1/types";
 import { validate } from "../../../middleware/validation.middleware";
 import { create } from "xmlbuilder2";
 import {
@@ -13,7 +17,7 @@ import {
   SecurityPermissions,
 } from "../../../config/permissions";
 import {
-  checkRequiredPermission,
+  checkRequiredScope,
   validateAccessToken,
 } from "../../../middleware/auth0.middleware";
 
@@ -71,8 +75,8 @@ itemsRouterV2.get("/:id", validate(idNumberRequestSchema), async (req, res) => {
 itemsRouterV2.post(
   "/",
   validateAccessToken,
-  checkRequiredPermission(ItemsPermissions.Write),
-  validate(itemDTORequestSchema),
+  checkRequiredScope(ItemsPermissions.Write),
+  validate(itemPOSTRequestSchema),
   async (req, res) => {
     /*
       #swagger.summary = "Creates a new item"
@@ -83,7 +87,7 @@ itemsRouterV2.post(
       #swagger.security = [{bearerAuth:[]}] 
     */
 
-    const data = itemDTORequestSchema.parse(req);
+    const data = itemPOSTRequestSchema.parse(req);
     const item = await upsertItem(data.body);
     if (item != null) {
       res.status(201).json(item);
@@ -96,7 +100,7 @@ itemsRouterV2.post(
 itemsRouterV2.delete(
   "/:id",
   validateAccessToken,
-  checkRequiredPermission(SecurityPermissions.Deny),
+  checkRequiredScope(SecurityPermissions.Deny),
   validate(idNumberRequestSchema),
   async (req, res) => {
     /*
@@ -121,8 +125,8 @@ itemsRouterV2.delete(
 itemsRouterV2.put(
   "/",
   validateAccessToken,
-  checkRequiredPermission(ItemsPermissions.Write),
-  validate(itemDTORequestSchema),
+  checkRequiredScope(ItemsPermissions.Write),
+  validate(itemPUTRequestSchema),
   async (req, res) => {
     /*
     #swagger.summary = "Updates an item"
@@ -133,7 +137,7 @@ itemsRouterV2.put(
     #swagger.security = [{bearerAuth:[]}]
     */
 
-    const data = itemDTORequestSchema.parse(req);
+    const data = itemPUTRequestSchema.parse(req);
     const item = await upsertItem(data.body);
     if (item != null) {
       res.json(item);
