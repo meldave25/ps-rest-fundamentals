@@ -5,27 +5,29 @@ import {
   getOrderDetail,
   getOrders,
   deleteOrderItem,
-  addOrderItem,
+  addOrderItems,
 } from "./orders.service";
 import {
   idItemIdUUIDRequestSchema,
   idUUIDRequestSchema,
-  orderDTORequestSchema,
   orderItemsDTORequestSchema,
+  orderPOSTRequestSchema,
+  orderPUTRequestSchema,
   pagingRequestSchema,
 } from "../types";
 import { validate } from "../../../middleware/validation.middleware";
+import { create } from "xmlbuilder2";
 import {
   OrdersPermissions,
   SecurityPermissions,
 } from "../../../config/permissions";
-import { checkRequiredPermission } from "../../../middleware/auth0.middleware";
+import { checkRequiredScope } from "../../../middleware/auth0.middleware";
 
 export const ordersRouter = express.Router();
 
 ordersRouter.get(
   "/",
-  checkRequiredPermission(OrdersPermissions.Read),
+  checkRequiredScope(OrdersPermissions.Read),
   validate(pagingRequestSchema),
   async (req, res) => {
     /*
@@ -46,7 +48,7 @@ ordersRouter.get(
     }
   */
     const data = pagingRequestSchema.parse(req);
-    const orders = await getOrders(data.query.start, data.query.size);
+    const orders = await getOrders(data.query.skip, data.query.take);
 
     res.json(orders);
   }
@@ -54,7 +56,7 @@ ordersRouter.get(
 
 ordersRouter.get(
   "/:id",
-  checkRequiredPermission(OrdersPermissions.Read_Single),
+  checkRequiredScope(OrdersPermissions.Read_Single),
   validate(idUUIDRequestSchema),
   async (req, res) => {
     /*
@@ -76,29 +78,32 @@ ordersRouter.get(
 
 ordersRouter.post(
   "/",
-  checkRequiredPermission(OrdersPermissions.Create),
-  validate(orderDTORequestSchema),
+  checkRequiredScope(OrdersPermissions.Create),
+  validate(orderPOSTRequestSchema),
   async (req, res) => {
-    /*
-      #swagger.summary = "Creates a new order"
-      #swagger.requestBody = {
-        required: true,
-        schema: { $ref: "#components/schemas/orderDTO"}
-      } 
-    */
-    const data = orderDTORequestSchema.parse(req);
+    const data = orderPOSTRequestSchema.parse(req);
     const order = await upsertOrder(data.body);
     if (order != null) {
-      res.status(201).json(order);
+      if (req.headers["accept"] == "application/xml") {
+        res.status(201).send(create().ele("order", order).end());
+      } else {
+        res.status(201).json(order);
+      }
     } else {
-      res.status(500).json({ message: "Creation failed" });
+      if (req.headers["accept"] == "application/xml") {
+        res
+          .status(500)
+          .send(create().ele("error", { message: "Creation failed" }).end());
+      } else {
+        res.status(500).json({ message: "Creation failed" });
+      }
     }
   }
 );
 
 ordersRouter.delete(
   "/:id",
-  checkRequiredPermission(SecurityPermissions.Deny),
+  checkRequiredScope(SecurityPermissions.Deny),
   validate(idUUIDRequestSchema),
   async (req, res) => {
     /*
@@ -119,20 +124,13 @@ ordersRouter.delete(
 );
 
 ordersRouter.put(
-  "/",
-  checkRequiredPermission(OrdersPermissions.Write),
-  validate(orderDTORequestSchema),
+  "/:id",
+  checkRequiredScope(OrdersPermissions.Write),
+  validate(orderPUTRequestSchema),
   async (req, res) => {
-    /*
-    #swagger.summary = "Updates an order's status"
-    #swagger.requestBody = {
-      required: true,
-      schema: { $ref: "#components/schemas/updateOrderDTO"}
-    } 
-    */
-
-    const data = orderDTORequestSchema.parse(req);
-    const order = await upsertOrder(data.body);
+    const data = orderPUTRequestSchema.parse(req);
+    const orderData = { customerId: "", ...data.body };
+    const order = await upsertOrder(orderData, data.params.id);
     if (order != null) {
       res.json(order);
     } else {
@@ -143,7 +141,7 @@ ordersRouter.put(
 
 ordersRouter.delete(
   "/:id/items/:itemId",
-  checkRequiredPermission(OrdersPermissions.Create),
+  checkRequiredScope(OrdersPermissions.Create),
   validate(idItemIdUUIDRequestSchema),
   async (req, res) => {
     /*
@@ -156,16 +154,28 @@ ordersRouter.delete(
     const data = idItemIdUUIDRequestSchema.parse(req);
     const order = await deleteOrderItem(data.params.id, data.params.itemId);
     if (order != null) {
-      res.json(order);
+      if (req.headers["accept"] == "application/xml") {
+        res.status(201).send(create().ele("order", order).end());
+      } else {
+        res.status(201).json(order);
+      }
     } else {
-      res.status(404).json({ message: "Order or Item Not Found" });
+      if (req.headers["accept"] == "application/xml") {
+        res
+          .status(404)
+          .send(
+            create().ele("error", { message: "Order or item not found" }).end()
+          );
+      } else {
+        res.status(404).json({ message: "Order or item not found" });
+      }
     }
   }
 );
 
 ordersRouter.post(
   "/:id/items",
-  checkRequiredPermission(OrdersPermissions.Create),
+  checkRequiredScope(OrdersPermissions.Create),
   validate(orderItemsDTORequestSchema),
   async (req, res) => {
     /*
@@ -176,17 +186,22 @@ ordersRouter.post(
     } 
   */
     const data = orderItemsDTORequestSchema.parse(req);
-    const promises = data.body.map((item) => {
-      return addOrderItem(data.params.id, item.itemId, item.quantity);
-    });
-    const order = await Promise.all(promises).then(() =>
-      getOrderDetail(data.params.id)
-    );
+    const order = await addOrderItems(data.params.id, data.body);
 
     if (order != null) {
-      res.status(201).json(order);
+      if (req.headers["accept"] == "application/xml") {
+        res.status(201).send(create().ele("order", order).end());
+      } else {
+        res.status(201).json(order);
+      }
     } else {
-      res.status(500).json({ message: "Addition failed" });
+      if (req.headers["accept"] == "application/xml") {
+        res
+          .status(500)
+          .send(create().ele("error", { message: "Creation failed" }).end());
+      } else {
+        res.status(500).json({ message: "Creation failed" });
+      }
     }
   }
 );

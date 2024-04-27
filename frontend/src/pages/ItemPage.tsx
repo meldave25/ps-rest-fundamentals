@@ -33,11 +33,13 @@ const ItemPage: React.FunctionComponent<IPageProps> = () => {
     return <CircularProgress variant="indeterminate" />;
   } else {
     if (item != undefined) {
-      <Box sx={{ p: 1 }}>
-        <h1>{item?.name}</h1>
-        <img src={item?.imageUrl} style={{ maxWidth: 1000 }} />
-        <p>{item?.description}</p>
-      </Box>;
+      return (
+        <Box sx={{ p: 1 }}>
+          <h1>{item?.name}</h1>
+          <img src={item?.imageUrl} style={{ maxWidth: 1000 }} />
+          <p>{item?.description}</p>
+        </Box>
+      );
     } else {
       return (
         <Card variant="outlined">
