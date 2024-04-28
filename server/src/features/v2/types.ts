@@ -1,11 +1,11 @@
 export type Item = {
   id: number;
   name: string;
-  thumbnailImageUrl?: string;
+  thumbnailImageUrl?: string | null;
 };
 
 export type ItemDetail = Item & {
   description: string | null;
-  staffReview?: string;
-  fullImageUrl?: string;
+  staffReview?: string | null;
+  fullImageUrl?: string | null;
 };
