@@ -5,7 +5,11 @@ import {
   getItemDetail,
   getItems,
 } from "./items.serviceV2";
-import { idNumberRequestSchema, itemDTORequestSchema } from "../../v1/types";
+import {
+  idNumberRequestSchema,
+  itemPOSTRequestSchema,
+  itemPUTRequestSchema,
+} from "../../v1/types";
 import { validate } from "../../../middleware/validation.middleware";
 import { create } from "xmlbuilder2";
 import {
@@ -13,7 +17,7 @@ import {
   SecurityPermissions,
 } from "../../../config/permissions";
 import {
-  checkRequiredPermission,
+  checkRequiredScope,
   validateAccessToken,
 } from "../../../middleware/auth0.middleware";
 
@@ -50,17 +54,23 @@ itemsRouterV2.get("/:id", validate(idNumberRequestSchema), async (req, res) => {
       res.json(item);
     }
   } else {
-    res.status(404).json({ message: "Item Not Found" });
+    if (req.headers["accept"] == "application/xml") {
+      res
+        .status(404)
+        .send(create().ele("error", { message: "Item Not Found" }).end());
+    } else {
+      res.status(404).json({ message: "Item Not Found" });
+    }
   }
 });
 
 itemsRouterV2.post(
   "/",
   validateAccessToken,
-  checkRequiredPermission(ItemsPermissions.Write),
-  validate(itemDTORequestSchema),
+  checkRequiredScope(ItemsPermissions.Create),
+  validate(itemPOSTRequestSchema),
   async (req, res) => {
-    const data = itemDTORequestSchema.parse(req);
+    const data = itemPOSTRequestSchema.parse(req);
     const item = await upsertItem(data.body);
     if (item != null) {
       res.status(201).json(item);
@@ -73,7 +83,7 @@ itemsRouterV2.post(
 itemsRouterV2.delete(
   "/:id",
   validateAccessToken,
-  checkRequiredPermission(SecurityPermissions.Deny),
+  checkRequiredScope(SecurityPermissions.Deny),
   validate(idNumberRequestSchema),
   async (req, res) => {
     const data = idNumberRequestSchema.parse(req);
@@ -87,13 +97,13 @@ itemsRouterV2.delete(
 );
 
 itemsRouterV2.put(
-  "/",
+  "/:id",
   validateAccessToken,
-  checkRequiredPermission(ItemsPermissions.Write),
-  validate(itemDTORequestSchema),
+  checkRequiredScope(ItemsPermissions.Write),
+  validate(itemPUTRequestSchema),
   async (req, res) => {
-    const data = itemDTORequestSchema.parse(req);
-    const item = await upsertItem(data.body);
+    const data = itemPUTRequestSchema.parse(req);
+    const item = await upsertItem(data.body, data.params.id);
     if (item != null) {
       res.json(item);
     } else {
