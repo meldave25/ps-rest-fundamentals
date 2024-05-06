@@ -53,7 +53,7 @@ itemsRouter.get("/:id", validate(idNumberRequestSchema), async (req, res) => {
     #swagger.summary = "Gets a specific item by ID"
     #swagger.responses[200] = {
       description: "The item",
-      schema: {$ref: "#components/schemas/itemDetailed"}
+      schema: {$ref: "#components/schemas/itemDetail"}
     }
   */
   const data = idNumberRequestSchema.parse(req);
@@ -83,6 +83,14 @@ itemsRouter.post(
   checkRequiredScope(ItemsPermissions.Create),
   validate(itemPOSTRequestSchema),
   async (req, res) => {
+    /*
+      #swagger.summary = "Creates a new item"
+      #swagger.requestBody = {
+        required: true,
+        schema: { $ref: "#components/schemas/itemDTO"}
+      }
+      #swagger.security = [{bearerAuth:[]}] 
+    */
     const data = itemPOSTRequestSchema.parse(req);
     const item = await upsertItem(data.body);
     if (item != null) {
@@ -124,6 +132,14 @@ itemsRouter.put(
   checkRequiredScope(ItemsPermissions.Write),
   validate(itemPUTRequestSchema),
   async (req, res) => {
+    /*
+    #swagger.summary = "Updates an item"
+    #swagger.requestBody = {
+      required: true,
+      schema: { $ref: "#components/schemas/itemDTO"}
+    } 
+    #swagger.security = [{bearerAuth:[]}]
+    */
     const data = itemPUTRequestSchema.parse(req);
     const item = await upsertItem(data.body, data.params.id);
     if (item != null) {

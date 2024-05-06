@@ -17,39 +17,30 @@ const auth = {
   scheme: "bearer",
 };
 
-const itemDTO = {
-  $id: 1,
-  $name: "Kayak",
-};
-
-const updateItemDTO = {
-  ...itemDTO,
-  description: "Go for a paddle",
-};
-
 const item = {
-  ...itemDTO,
+  id: 1,
+  name: "Kayak",
   imageUrl: "http://localhost:4000/images/1.jpg",
 };
 
-const itemDetailed = {
+const itemDetail = {
   ...item,
+  description: "Go for a paddle",
+  staffReview: "It's a lot of fun!",
+};
+
+const itemDTO = {
+  $name: "Kayak",
   description: "Go for a paddle",
 };
 
-const orderItem = {
-  orderId: "262cb163-5ea4-41fa-87c1-a93fac8025c6",
-  item: item,
-  quantity: 2,
-};
-
-const createCustomerDTO = {
+const customerDTO = {
   name: "Kelsey Shiratori",
   email: "ks@gmail.com",
 };
 
 const customer = {
-  ...createCustomerDTO,
+  ...customerDTO,
   $id: "45b23d49-7297-43da-b853-3c7f42c7da6a",
 };
 
@@ -64,24 +55,25 @@ const order = {
   customer: customer,
 };
 
+const orderItem = {
+  orderId: "262cb163-5ea4-41fa-87c1-a93fac8025c6",
+  item: item,
+  quantity: 2,
+};
+
 const OrderDetail = {
   ...order,
   items: [orderItem],
 };
 
-const updateOrderDTO = {
-  $id: "262cb163-5ea4-41fa-87c1-a93fac8025c6",
-  status: "Created",
-};
-
-const orderDTO = {
-  ...updateOrderDTO,
-  customerId: "45b23d49-7297-43da-b853-3c7f42c7da6a",
-};
-
 const orderItemDTO = {
   itemId: 1,
   quantity: 2,
+};
+
+const orderDTO = {
+  $customerId: "45b23d49-7297-43da-b853-3c7f42c7da6a",
+  status: "Created",
 };
 
 const docV1 = {
@@ -98,18 +90,15 @@ const docV1 = {
     schemas: {
       items: [item],
       item: item,
-      itemDetailed: itemDetailed,
+      itemDetail: itemDetail,
       itemDTO: itemDTO,
-      updateItemDTO: updateItemDTO,
-      customer: customer,
       customers: [customer],
+      customer: customer,
       customerOrders: [basicOrder],
-      createCustomerDTO: createCustomerDTO,
-      updateCustomerDTO: customer,
+      customerDTO: customerDTO,
       orders: [order],
       order: OrderDetail,
       orderDTO: orderDTO,
-      updateOrderDTO: updateOrderDTO,
       orderItemsDTO: [orderItemDTO],
     },
   },
@@ -121,12 +110,13 @@ let endpointFiles = ["./src/features/v1/routes.ts"];
 swaggerAutogen(options)(outputFile, endpointFiles, docV1);
 
 const itemV2 = {
-  ...itemDTO,
+  id: 1,
+  name: "Kayak",
   thumbnailImageUrl: "http://localhost:4000/images/thumbnails/1.jpg",
 };
 
-const itemDetailedV2 = {
-  ...item,
+const itemDetailV2 = {
+  ...itemV2,
   description: "Go for a paddle",
   staffReview: "This is an awesome product!",
   fullImageUrl: "http://localhost:4000/images/1.jpg",
@@ -143,18 +133,15 @@ const docV2 = {
     schemas: {
       items: [itemV2],
       item: itemV2,
-      itemDetailed: itemDetailedV2,
+      itemDetail: itemDetailV2,
       itemDTO: itemDTO,
-      updateItemDTO: updateItemDTO,
-      customer: customer,
       customers: [customer],
+      customer: customer,
       customerOrders: [basicOrder],
-      createCustomerDTO: createCustomerDTO,
-      updateCustomerDTO: customer,
+      customerDTO: customerDTO,
       orders: [order],
       order: OrderDetail,
       orderDTO: orderDTO,
-      updateOrderDTO: updateOrderDTO,
       orderItemsDTO: [orderItemDTO],
     },
   },

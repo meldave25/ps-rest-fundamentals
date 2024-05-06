@@ -141,6 +141,13 @@ customersRouter.post(
   checkRequiredScope(CustomersPermissions.Create),
   validate(customerPOSTRequestSchema),
   async (req, res) => {
+    /*
+      #swagger.summary = "Creates a new customer"
+      #swagger.requestBody = {
+        required: true,
+        schema: { $ref: "#components/schemas/customerDTO"}
+      } 
+    */
     const data = customerPOSTRequestSchema.parse(req);
     const customer = await upsertCustomer(data.body);
     if (customer != null) {
@@ -189,6 +196,13 @@ customersRouter.put(
   checkRequiredScope(CustomersPermissions.Write),
   validate(customerPUTRequestSchema),
   async (req, res) => {
+    /*
+      #swagger.summary = "Updates a customer"
+      #swagger.requestBody = {
+        required: true,
+        schema: { $ref: "#components/schemas/customerDTO"}
+      } 
+    */
     const data = customerPUTRequestSchema.parse(req);
     const customer = await upsertCustomer(data.body, data.params.id);
     if (customer != null) {

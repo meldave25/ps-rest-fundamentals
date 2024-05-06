@@ -81,6 +81,13 @@ ordersRouter.post(
   checkRequiredScope(OrdersPermissions.Create),
   validate(orderPOSTRequestSchema),
   async (req, res) => {
+    /*
+      #swagger.summary = "Creates a new order"
+      #swagger.requestBody = {
+        required: true,
+        schema: { $ref: "#components/schemas/orderDTO"}
+      } 
+    */
     const data = orderPOSTRequestSchema.parse(req);
     const order = await upsertOrder(data.body);
     if (order != null) {
@@ -128,6 +135,13 @@ ordersRouter.put(
   checkRequiredScope(OrdersPermissions.Write),
   validate(orderPUTRequestSchema),
   async (req, res) => {
+    /*
+    #swagger.summary = "Updates an order's status"
+    #swagger.requestBody = {
+      required: true,
+      schema: { $ref: "#components/schemas/updateOrderDTO"}
+    } 
+    */
     const data = orderPUTRequestSchema.parse(req);
     const orderData = { customerId: "", ...data.body };
     const order = await upsertOrder(orderData, data.params.id);
