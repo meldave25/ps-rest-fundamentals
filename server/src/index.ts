@@ -31,11 +31,11 @@ const swaggerOptions = {
   swaggerOptions: {
     urls: [
       {
-        url: `http://localhost:${PORT}/swagger_output_v1.json`,
+        url: `http://localhost:${PORT}/open_api_v1.json`,
         name: "v1",
       },
       {
-        url: `http://localhost:${PORT}/swagger_output_v2.json`,
+        url: `http://localhost:${PORT}/open_api_v2.json`,
         name: "v2",
       },
     ],

@@ -104,7 +104,7 @@ const docV1 = {
   },
 };
 
-let outputFile = "../../public/swagger_output_v1.json";
+let outputFile = "../../public/open_api_v1.json";
 let endpointFiles = ["./src/features/v1/routes.ts"];
 
 swaggerAutogen(options)(outputFile, endpointFiles, docV1);
@@ -147,7 +147,7 @@ const docV2 = {
   },
 };
 
-outputFile = "../../public/swagger_output_v2.json";
+outputFile = "../../public/open_api_v2.json";
 endpointFiles = ["./src/features/v2/routes.ts"];
 
 swaggerAutogen(options)(outputFile, endpointFiles, docV2);
