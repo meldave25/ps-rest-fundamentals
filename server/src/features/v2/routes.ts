@@ -7,8 +7,24 @@ import { validateAccessToken } from "../../middleware/auth0.middleware";
 // register routes
 export const v2Router = express.Router();
 
-v2Router.use("/items", itemsRouterV2);
+v2Router.use(
+  "/items",
+  itemsRouterV2
+  //    #swagger.tags = ['Items']
+);
 
-v2Router.use("/customers", validateAccessToken, customersRouter);
+v2Router.use(
+  "/customers",
+  validateAccessToken,
+  customersRouter
+  //    #swagger.tags = ['Customers']
+  //    #swagger.security = [{bearerAuth:[]}]
+);
 
-v2Router.use("/orders", validateAccessToken, ordersRouter);
+v2Router.use(
+  "/orders",
+  validateAccessToken,
+  ordersRouter
+  //    #swagger.tags = ['Orders']
+  //    #swagger.security = [{bearerAuth:[]}]
+);
