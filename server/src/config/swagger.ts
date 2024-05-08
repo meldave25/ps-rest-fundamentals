@@ -1,13 +1,4 @@
 import swaggerAutogen from "swagger-autogen";
-import * as dotenv from "dotenv";
-
-dotenv.config();
-
-if (!process.env.PORT) {
-  throw new Error("Missing required environment variables");
-}
-
-const PORT = parseInt(process.env.PORT, 10);
 const options = {
   openapi: "3.1.0",
   autoHeaders: false,
@@ -82,7 +73,7 @@ const docV1 = {
     title: "Carved Rock Fitness API",
     description: "API for Rest Fundamentals course on Pluralsight",
   },
-  servers: [{ url: `http://localhost:${PORT}/api/v1` }],
+  servers: [{ url: "/api/v1" }],
   components: {
     securitySchemes: {
       bearerAuth: auth,
@@ -128,7 +119,7 @@ const docV2 = {
     title: "Carved Rock Fitness API",
     description: "API for Rest Fundamentals course on Pluralsight",
   },
-  servers: [{ url: `http://localhost:${PORT}/api/v2` }],
+  servers: [{ url: "/api/v2" }],
   components: {
     schemas: {
       items: [itemV2],
