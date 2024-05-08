@@ -31,7 +31,7 @@ customersRouter.get(
       #swagger.summary = "Gets all customers"
       #swagger.responses[200] = {
         description: "The list of customers",
-        schema: {$ref: "#components/schemas/customers"}
+        schema: {$ref: "#/components/schemas/customers"}
       }
     */
 
@@ -58,7 +58,7 @@ customersRouter.get(
       #swagger.summary = "Gets a specific customer by ID"
       #swagger.responses[200] = {
         description: "The customer",
-        schema: {$ref: "#components/schemas/customer"}
+        schema: {$ref: "#/components/schemas/customer"}
       }
     */
     const data = idUUIDRequestSchema.parse(req);
@@ -90,7 +90,7 @@ customersRouter.get(
       #swagger.summary = "Gets the orders for a customer by customer ID"
       #swagger.responses[200] = {
         description: "The orders",
-        schema: {$ref: "#components/schemas/customerOrders"}
+        schema: {$ref: "#/components/schemas/customerOrders"}
       }
     */
 
@@ -118,7 +118,7 @@ customersRouter.get(
       #swagger.summary = "Gets customers matching the query"
       #swagger.responses[200] = {
         description: "The list of customers",
-        schema: {$ref: "#components/schemas/customers"}
+        schema: {$ref: "#/components/schemas/customers"}
       }
     */
     const data = queryRequestSchema.parse(req);
@@ -145,7 +145,7 @@ customersRouter.post(
       #swagger.summary = "Creates a new customer"
       #swagger.requestBody = {
         required: true,
-        schema: { $ref: "#components/schemas/customerDTO"}
+        schema: { $ref: "#/components/schemas/customerDTO"}
       } 
     */
     const data = customerPOSTRequestSchema.parse(req);
@@ -177,7 +177,7 @@ customersRouter.delete(
       #swagger.summary = "Deletes a specific customer by ID"
       #swagger.responses[200] = {
         description: "The customer that was deleted",
-        schema: {$ref: "#components/schemas/customer"}
+        schema: {$ref: "#/components/schemas/customer"}
       }
     */
 
@@ -200,7 +200,7 @@ customersRouter.put(
       #swagger.summary = "Updates a customer"
       #swagger.requestBody = {
         required: true,
-        schema: { $ref: "#components/schemas/customerDTO"}
+        schema: { $ref: "#/components/schemas/customerDTO"}
       } 
     */
     const data = customerPUTRequestSchema.parse(req);

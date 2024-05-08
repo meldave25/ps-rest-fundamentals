@@ -28,7 +28,7 @@ itemsRouterV2.get("/", async (req, res) => {
     #swagger.summary = "Gets all items"
     #swagger.responses[200] = {
       description: "The list of items",
-      schema: {$ref: "#components/schemas/items"}
+      schema: {$ref: "#/components/schemas/items"}
     }
   */
   const items = await getItems();
@@ -53,7 +53,7 @@ itemsRouterV2.get("/:id", validate(idNumberRequestSchema), async (req, res) => {
     #swagger.summary = "Gets a specific item by ID"
     #swagger.responses[200] = {
       description: "The item",
-      schema: {$ref: "#components/schemas/itemDetail"}
+      schema: {$ref: "#/components/schemas/itemDetail"}
     }
   */
   const data = idNumberRequestSchema.parse(req);
@@ -88,7 +88,7 @@ itemsRouterV2.post(
       #swagger.summary = "Creates a new item"
       #swagger.requestBody = {
         required: true,
-        schema: { $ref: "#components/schemas/itemDTO"}
+        schema: { $ref: "#/components/schemas/itemDTO"}
       }
       #swagger.security = [{bearerAuth:[]}] 
     */
@@ -112,7 +112,7 @@ itemsRouterV2.delete(
       #swagger.summary = "Deletes a specific item by ID"
       #swagger.responses[200] = {
         description: "The item that was deleted",
-        schema: {$ref: "#components/schemas/item"}
+        schema: {$ref: "#/components/schemas/item"}
       }
       #swagger.security = [{bearerAuth:[]}]
     */
@@ -137,7 +137,7 @@ itemsRouterV2.put(
     #swagger.summary = "Updates an item"
     #swagger.requestBody = {
       required: true,
-      schema: { $ref: "#components/schemas/itemDTO"}
+      schema: { $ref: "#/components/schemas/itemDTO"}
     } 
     #swagger.security = [{bearerAuth:[]}]
     */

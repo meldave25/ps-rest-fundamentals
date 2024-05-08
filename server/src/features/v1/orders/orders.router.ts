@@ -44,7 +44,7 @@ ordersRouter.get(
     }
     #swagger.responses[200] = {
       description: "The list of orders",
-      schema: {$ref: "#components/schemas/orders"}
+      schema: {$ref: "#/components/schemas/orders"}
     }
   */
     const data = pagingRequestSchema.parse(req);
@@ -63,7 +63,7 @@ ordersRouter.get(
     #swagger.summary = "Gets a specific order by ID"
     #swagger.responses[200] = {
       description: "The order",
-      schema: {$ref: "#components/schemas/order"}
+      schema: {$ref: "#/components/schemas/order"}
     }
   */
     const data = idUUIDRequestSchema.parse(req);
@@ -85,7 +85,7 @@ ordersRouter.post(
       #swagger.summary = "Creates a new order"
       #swagger.requestBody = {
         required: true,
-        schema: { $ref: "#components/schemas/orderDTO"}
+        schema: { $ref: "#/components/schemas/orderDTO"}
       } 
     */
     const data = orderPOSTRequestSchema.parse(req);
@@ -117,7 +117,7 @@ ordersRouter.delete(
       #swagger.summary = "Deletes a specific order by ID"
       #swagger.responses[200] = {
         description: "The order that was deleted",
-        schema: {$ref: "#components/schemas/order"}
+        schema: {$ref: "#/components/schemas/order"}
       }
     */
     const data = idUUIDRequestSchema.parse(req);
@@ -139,7 +139,7 @@ ordersRouter.put(
     #swagger.summary = "Updates an order's status"
     #swagger.requestBody = {
       required: true,
-      schema: { $ref: "#components/schemas/updateOrderDTO"}
+      schema: { $ref: "#/components/schemas/updateOrderDTO"}
     } 
     */
     const data = orderPUTRequestSchema.parse(req);
@@ -162,7 +162,7 @@ ordersRouter.delete(
     #swagger.summary = "Deletes a specific item from an order by order and item ID"
     #swagger.responses[200] = {
       description: "The order after the item is deleted",
-      schema: {$ref: "#components/schemas/order"}
+      schema: {$ref: "#/components/schemas/order"}
     }
   */
     const data = idItemIdUUIDRequestSchema.parse(req);
@@ -196,7 +196,7 @@ ordersRouter.post(
     #swagger.summary = "Adds items to an order"
     #swagger.requestBody = {
       required: true,
-      schema: { $ref: "#components/schemas/orderItemsDTO"}
+      schema: { $ref: "#/components/schemas/orderItemsDTO"}
     } 
   */
     const data = orderItemsDTORequestSchema.parse(req);

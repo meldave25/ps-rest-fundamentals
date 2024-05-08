@@ -9,7 +9,7 @@ if (!process.env.PORT) {
 
 const PORT = parseInt(process.env.PORT, 10);
 const options = {
-  openapi: "3.0.0",
+  openapi: "3.1.0",
   autoHeaders: false,
 };
 const auth = {
