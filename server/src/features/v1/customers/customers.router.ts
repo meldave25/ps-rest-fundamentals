@@ -146,6 +146,10 @@ customersRouter.post(
       #swagger.requestBody = {
         required: true,
         schema: { $ref: "#/components/schemas/customerDTO"}
+      }
+      #swagger.responses[201] = {
+        description: "The customer",
+        schema: {$ref: "#/components/schemas/customer"}
       } 
     */
     const data = customerPOSTRequestSchema.parse(req);
@@ -201,6 +205,10 @@ customersRouter.put(
       #swagger.requestBody = {
         required: true,
         schema: { $ref: "#/components/schemas/customerDTO"}
+      }
+      #swagger.responses[200] = {
+        description: "The customer",
+        schema: {$ref: "#/components/schemas/customer"}
       } 
     */
     const data = customerPUTRequestSchema.parse(req);

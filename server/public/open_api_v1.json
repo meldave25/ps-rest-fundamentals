@@ -44,13 +44,25 @@
         "description": "",
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "The newly created item",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/item"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/item"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Item creation failed"
           }
         },
         "security": [
@@ -179,7 +191,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "The updated item",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/item"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/item"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
@@ -248,7 +272,19 @@
         "description": "",
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "The customer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/customer"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/customer"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
@@ -388,7 +424,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "The customer",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/customer"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/customer"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
@@ -568,7 +616,19 @@
         "description": "",
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "The order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/order"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/order"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
@@ -708,7 +768,19 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "The order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/order"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/order"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
@@ -816,7 +888,19 @@
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "The order after the item is added",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/order"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/order"
+                }
+              }
+            }
           },
           "400": {
             "description": "Bad Request"
@@ -1195,6 +1279,18 @@
         },
         "xml": {
           "name": "orderItemsDTO"
+        }
+      },
+      "updateOrderDTO": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "Shipped"
+          }
+        },
+        "xml": {
+          "name": "updateOrderDTO"
         }
       }
     }

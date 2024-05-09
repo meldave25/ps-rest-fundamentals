@@ -89,7 +89,14 @@ itemsRouter.post(
         required: true,
         schema: { $ref: "#/components/schemas/itemDTO"}
       }
-      #swagger.security = [{bearerAuth:[]}] 
+      #swagger.responses[201] = {
+      description: "The newly created item",
+      schema: {$ref: "#/components/schemas/item"}
+      }
+      #swagger.responses[500] = {
+        description: "Item creation failed",
+      }
+      #swagger.security = [{bearerAuth:[]}]
     */
     const data = itemPOSTRequestSchema.parse(req);
     const item = await upsertItem(data.body);
@@ -133,12 +140,16 @@ itemsRouter.put(
   validate(itemPUTRequestSchema),
   async (req, res) => {
     /*
-    #swagger.summary = "Updates an item"
-    #swagger.requestBody = {
-      required: true,
-      schema: { $ref: "#/components/schemas/itemDTO"}
-    } 
-    #swagger.security = [{bearerAuth:[]}]
+      #swagger.summary = "Updates an item"
+      #swagger.requestBody = {
+        required: true,
+        schema: { $ref: "#/components/schemas/itemDTO"}
+      } 
+      #swagger.responses[200] = {
+        description: "The updated item",
+        schema: {$ref: "#/components/schemas/item"}
+      }
+      #swagger.security = [{bearerAuth:[]}]
     */
     const data = itemPUTRequestSchema.parse(req);
     const item = await upsertItem(data.body, data.params.id);

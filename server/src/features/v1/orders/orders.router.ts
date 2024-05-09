@@ -86,6 +86,10 @@ ordersRouter.post(
       #swagger.requestBody = {
         required: true,
         schema: { $ref: "#/components/schemas/orderDTO"}
+      }
+      #swagger.responses[201] = {
+        description: "The order",
+        schema: {$ref: "#/components/schemas/order"}
       } 
     */
     const data = orderPOSTRequestSchema.parse(req);
@@ -136,11 +140,15 @@ ordersRouter.put(
   validate(orderPUTRequestSchema),
   async (req, res) => {
     /*
-    #swagger.summary = "Updates an order's status"
-    #swagger.requestBody = {
-      required: true,
-      schema: { $ref: "#/components/schemas/updateOrderDTO"}
-    } 
+      #swagger.summary = "Updates an order's status"
+      #swagger.requestBody = {
+        required: true,
+        schema: { $ref: "#/components/schemas/updateOrderDTO"}
+      }
+      #swagger.responses[200] = {
+        description: "The order",
+        schema: {$ref: "#/components/schemas/order"}
+      } 
     */
     const data = orderPUTRequestSchema.parse(req);
     const orderData = { customerId: "", ...data.body };
@@ -198,6 +206,10 @@ ordersRouter.post(
       required: true,
       schema: { $ref: "#/components/schemas/orderItemsDTO"}
     } 
+    #swagger.responses[201] = {
+      description: "The order after the item is added",
+      schema: {$ref: "#/components/schemas/order"}
+    }
   */
     const data = orderItemsDTORequestSchema.parse(req);
     const order = await addOrderItems(data.params.id, data.body);

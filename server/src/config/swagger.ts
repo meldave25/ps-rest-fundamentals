@@ -67,6 +67,10 @@ const orderDTO = {
   status: "Created",
 };
 
+const updateOrderDTO = {
+  status: "Shipped",
+};
+
 const docV1 = {
   info: {
     version: "v1.0.0",
@@ -91,6 +95,7 @@ const docV1 = {
       order: OrderDetail,
       orderDTO: orderDTO,
       orderItemsDTO: [orderItemDTO],
+      updateOrderDTO: updateOrderDTO,
     },
   },
 };
@@ -134,6 +139,7 @@ const docV2 = {
       order: OrderDetail,
       orderDTO: orderDTO,
       orderItemsDTO: [orderItemDTO],
+      updateOrderDTO: updateOrderDTO,
     },
   },
 };
