@@ -36,6 +36,7 @@ export function getItemDetail(itemId: number): Promise<ItemDetail | null> {
 
   return prisma.item
     .findFirst({
+      select: { id: true, name: true, description: true },
       where: { id: itemId },
     })
     .then((item) => {
