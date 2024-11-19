@@ -9,6 +9,7 @@
   "dependencies": {
     "@isaacs/ttlcache": "^1.4.1",
     "@prisma/client": "^5.9.1",
+    "carved-rock": "file:",
     "cors": "^2.8.5",
     "dotenv": "^16.4.1",
     "express": "^4.18.2",

@@ -14,6 +14,7 @@
     "@mui/icons-material": "latest",
     "@mui/material": "latest",
     "axios": "^1.6.7",
+    "carved-rock": "file:",
     "dotenv": "^16.4.4",
     "react": "latest",
     "react-dom": "latest",
